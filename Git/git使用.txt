@@ -1,0 +1,31 @@
+第一次使用git：
+1、git在本地创建一个ssh key
+2、把本地ssh key绑定到github账户中
+
+本地repository首次连接到github：
+1、选择账户
+git config --global user.name “Your Name”
+git config --global user.email “your@gmail.com”
+
+2、cd到当前文件夹
+git init
+git add file_name
+git status
+git commit -m “first commit”
+git branch -M main
+git remote add origin https://github.com/yexiaopingguo/xxxxxx.git
+git push -u origin main
+
+后续上传：
+git status
+git add file_name/ -A
+git commit -m “first commit”
+git push -u origin main
+
+通用指令
+git add/rm file_name
+git restore…
+
+Push出現錯誤訊息：
+强制覆盖本地仓库：git push -f
+
