@@ -29,3 +29,9 @@ git restore…
 Push出現錯誤訊息：
 强制覆盖本地仓库：git push -f
 
+切换分支
+git checkout <branch>
+
+合并分支，此时必须位于主支下
+git merge <branch>
+

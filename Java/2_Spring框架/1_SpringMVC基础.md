@@ -69,7 +69,7 @@ SpringMvc项目依然支持多种配置形式，这里我们首先讲解最传�
 </web-app>
 ```
 
-接着需要为整个Web应用程序配置一个Spring上下文环境（也就是容器），因为SpringMVC是基于Spring开发的，它直接利用Spring提供的容器来实现各种功能，那么第一步依然跟之前一样，需要编写一个配置文件：
+接着需要为整个Web应用程序配置一个Spring上下文环境（也就是容器）xml，因为SpringMVC是基于Spring开发的，它直接利用Spring提供的容器来实现各种功能，那么第一步依然跟之前一样，需要编写一个配置文件：
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -91,6 +91,9 @@ SpringMvc项目依然支持多种配置形式，这里我们首先讲解最传�
         <param-name>contextConfigLocation</param-name>
         <param-value>classpath:application.xml</param-value>
     </init-param>
+    ...
+    ...
+    ...
 </servlet>
 ```
 
@@ -107,7 +110,7 @@ public class HelloController {
 }
 ```
 
-接着我们需要将这个类注册为Bean才能正常使用，我们来编写一下Spring的配置文件，这里我们直接配置包扫描，XML下的包扫描需要这样开启：
+接着我们需要将这个类注册为Bean才能正常使用（@Controller、@Request...的底层都是@Component），我们来编写一下Spring的配置文件，这里我们直接配置包扫描，XML下的包扫描需要这样开启：
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -129,7 +132,9 @@ public class HelloController {
 
 ### 全注解配置形式
 
-如果你希望完完全全丢弃配置文件，使用纯注解开发，可以直接添加一个类，Tomcat会在类路径中查找实现ServletContainerInitializer 接口的类，如果发现的话，就用它来配置Servlet容器，Spring提供了这个接口的实现类 SpringServletContainerInitializer , 通过@HandlesTypes(WebApplicationInitializer.class)设置，这个类反过来会查找实现WebApplicationInitializer 的类，并将配置的任务交给他们来完成，因此直接实现接口即可：
+新建项目
+
+如果你希望完完全全丢弃配置文件，使用纯注解开发，可以直接添加一个类，Tomcat会在类路径中查找实现ServletContainerInitializer 接口的类，如果发现的话，就用它来配置Servlet容器，Spring提供了这个接口的实现类 SpringServletContainerInitializer , 通过@HandlesTypes(WebApplicationInitializer.class)设置，这个类反过来会查找实现WebApplicationInitializer 的类，并将配置的任务交给他们来完成，因此直接实现接口即可（在config文件夹下）：
 
 ```java
 public class MainInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
@@ -151,13 +156,25 @@ public class MainInitializer extends AbstractAnnotationConfigDispatcherServletIn
 }
 ```
 
-接着我们需要再配置类中添加一些必要的注解：
+接着我们需要在Spring配置类中添加一些必要的注解：
 
 ```java
 @Configuration
 @EnableWebMvc   //快速配置SpringMvc注解，如果不添加此注解会导致后续无法通过实现WebMvcConfigurer接口进行自定义配置
 @ComponentScan("com.example.controller")
 public class WebConfiguration {
+}
+```
+
+现在我们可以来测试一下是否配置正确，我们删除项目自带的Servlet类，创建一个Mvc中使用的Controller类
+```java
+@Controller
+public class HelloController {
+    @ResponseBody
+    @RequestMapping("/", produces = {"text/html;charset=UTF-8;", "application/json;"})    // 防止乱码
+    public String hello(){
+        return "HelloWorld!";
+    }
 }
 ```
 
@@ -186,13 +203,15 @@ public class WebConfiguration {
 
 ![image-20230630162821105](https://s2.loli.net/2023/06/30/7eti1wuU8Bd4RqZ.png)
 
+[解决中文乱码问题]: https://blog.csdn.net/pan_junbiao/article/details/104178795
+
 ## Controller控制器
 
 有了SpringMVC之后，我们不必再像之前那样一个请求地址创建一个Servlet了，它使用`DispatcherServlet`替代Tomcat为我们提供的默认的静态资源Servlet，也就是说，现在所有的请求（除了jsp，因为Tomcat还提供了一个jsp的Servlet）都会经过`DispatcherServlet`进行处理。
 
 那么`DispatcherServlet`会帮助我们做什么呢？
 
-![img](https://s2.loli.net/2023/02/18/SQNnl3yFjhHbp1G.jpg)
+<img src="https://s2.loli.net/2023/02/18/SQNnl3yFjhHbp1G.jpg" alt="img" style="zoom: 50%;" />
 
 根据图片我们可以了解，我们的请求到达Tomcat服务器之后，会交给当前的Web应用程序进行处理，而SpringMVC使用`DispatcherServlet`来处理所有的请求，也就是说它被作为一个统一的访问点，所有的请求全部由它来进行调度。
 
@@ -285,6 +304,12 @@ public class HelloController {
 
 ![image-20230220150905300](https://s2.loli.net/2023/02/20/ru4pBgI75JZxG6F.png)
 
+[IDEA与Tomcat编码不一致导致的中文问题]: https://www.jianshu.com/p/f87b6301d668
+
+<img src="./img/chinese_problem.png" style="zoom: 80%;" />
+
+
+
 我们在之前，使用Thymeleaf解析后端的一些数据时，需要通过Context进行传递，而使用SpringMvc后，数据我们可以直接向Model模型层进行提供：
 
 ```java
@@ -336,7 +361,7 @@ public String index(Model model){  //这里不仅仅可以是Model，还可以�
 
 注意，一定要保证视图名称下面出现横线并且按住Ctrl可以跳转，配置才是正确的（最新版IDEA）
 
-我们的页面中可能还会包含一些静态资源，比如js、css，因此这里我们还需要配置一下，让静态资源通过Tomcat提供的默认Servlet进行解析，我们需要让配置类实现一下`WebMvcConfigurer`接口，这样在Web应用程序启动时，会根据我们重写方法里面的内容进行进一步的配置：
+我们的页面中可能还会包含一些静态资源，比如js、css，因此这里我们还需要配置一下，让静态资源通过Tomcat提供的默认Servlet进行解析，我们需要在spring配置类实现一下`WebMvcConfigurer`接口(public class WebConfiguration...implements WebMvcConfigurer)，这样在Web应用程序启动时，会根据我们重写方法里面的内容进行进一步的配置：
 
 ```java
 @Override
@@ -633,7 +658,7 @@ public String home(){
 public String index(){
     return "forward:home";
 }
-
+ 
 @RequestMapping("/home")
 public String home(){
     return "home";
@@ -695,7 +720,7 @@ public class MainController {
 
 中文释义为**“表现层状态转换”**（名字挺高大上的），它不是一种标准，而是一种设计风格。它的主要作用是充分并正确利用HTTP协议的特性，规范资源获取的URI路径。通俗的讲，RESTful风格的设计允许将参数通过URL拼接传到服务端，目的是让URL看起来更简洁实用，并且我们可以充分使用多种HTTP请求方式（POST/GET/PUT/DELETE），来执行相同请求地址的不同类型操作。
 
-因此，这种风格的连接，我们就可以直接从请求路径中读取参数，比如：
+因此，这种风格的连接，我们就可以直接从请求路径中读取参数，比如：  
 
 ```
 http://localhost:8080/mvc/index/123456
@@ -770,7 +795,17 @@ public class MainController {
 
 拦截器是整个SpringMVC的一个重要内容，拦截器与过滤器类似，都是用于拦截一些非法请求，但是我们之前讲解的过滤器是作用于Servlet之前，只有经过层层的过滤器才可以成功到达Servlet，而拦截器并不是在Servlet之前，它在Servlet与RequestMapping之间，相当于DispatcherServlet在将请求交给对应Controller中的方法之前进行拦截处理，它只会拦截所有Controller中定义的请求映射对应的请求（不会拦截静态资源），这里一定要区分两者的不同。
 
-![image-20230630194651686](https://s2.loli.net/2023/06/30/6J3D98HdkawAOVK.png)
+<img src="https://s2.loli.net/2023/06/30/6J3D98HdkawAOVK.png" alt="image-20230630194651686" style="zoom: 25%;" />
+
+Servlet与RequestMapping之间具体关系如下：
+
+1. 请求到达Servlet容器（如Tomcat）。
+2. Servlet容器根据URL映射规则，将请求转发给对应的Servlet。
+3. Spring MVC的DispatcherServlet（一个特殊的Servlet）作为应用程序的前端控制器，接收到请求。
+4. DispatcherServlet根据@RequestMapping注解中配置的URL映射规则，将请求分发给相应的处理方法（也称为Controller方法）。
+5. Controller方法执行相应的业务逻辑，并生成相应的响应数据。
+6. DispatcherServlet将生成的响应数据返回给Servlet容器。
+7. Servlet容器将响应发送回客户端。
 
 ### 创建拦截器
 
@@ -786,13 +821,13 @@ public class MainInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        System.out.println("我是处理之后！");
+        System.out.println("我是拦截处理之后！");
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
       	//在DispatcherServlet完全处理完请求后被调用
-        System.out.println("我是完成之后！");
+        System.out.println("我是DispatcherServlet完成之后！");
     }
 }
 ```
@@ -856,13 +891,13 @@ public String index(){
 public class SubInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        System.out.println("二号拦截器：我是处理之前！");
+        System.out.println("二号拦截器：我是拦截处理之前！");
         return true;
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        System.out.println("二号拦截器：我是处理之后！");
+        System.out.println("二号拦截器：我是拦截处理之后！");
     }
 
     @Override

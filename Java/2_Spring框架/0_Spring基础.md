@@ -872,6 +872,8 @@ StudentFactory bean = (StudentFactory) context.getBean("&studentFactory");
 
 @ComponentScan("com.xxx.xxx")
 
+@Value
+
 前面我们已经完成了大部分的配置文件学习，但是我们发现，使用配置文件进行配置，貌似有点太累了吧？可以想象一下，如果我们的项目非常庞大，整个配置文件将会充满Bean配置，并且会继续庞大下去，能否有一种更加高效的方法能够省去配置呢？还记得我们在JavaWeb阶段用到的非常方便东西吗？没错，就是注解。
 
 既然现在要使用注解来进行开发，那么我们就删掉之前的xml配置文件吧，我们来看看使用注解能有多方便。
@@ -1778,7 +1780,7 @@ public class FieldValueTestBean {
 
 通过AOP我们可以在保证原有业务不变的情况下，添加额外的动作，比如我们的某些方法执行完成之后，需要打印日志，那么这个时候，我们就可以使用AOP来帮助我们完成，它可以批量地为这些方法添加动作。可以说，它相当于将我们原有的方法，在不改变源代码的基础上进行了增强处理。
 
-![image-20221130155358974](https://s2.loli.net/2022/11/30/sJbSrgiAxa8Vhcv.png)
+<img src="https://s2.loli.net/2022/11/30/sJbSrgiAxa8Vhcv.png" alt="image-20221130155358974" style="zoom: 25%;" />
 
 相当于我们的整个业务流程，被直接斩断，并在断掉的位置添加了一个额外的操作，再连接起来，也就是在一个切点位置插入内容。它的原理实际上就是通过动态代理机制实现的，我们在JavaWeb阶段已经给大家讲解过动态代理了。不过Spring底层并不是使用的JDK提供的动态代理，而是使用的第三方库实现，它能够以父类的形式代理，而不仅仅是接口。
 
@@ -1960,23 +1962,14 @@ public class Student {
 }
 ```
 
-我们希望在增强的方法中也能拿到这个参数，然后进行处理：
+我们希望在增强的方法中也能拿到这个参数，然后进行处理，这个时候，我们可以为我们切入的方法添加一个JoinPoint参数，通过此参数就可以快速获取切点位置的一些信息：
 
 ```java
 public class StudentAOP {
-    public void afterStudy() {
-      	//这个str参数我们该从哪里拿呢？
-        System.out.println("学什么"+str+"，Rust天下第一！");
-    }
-}
-```
-
-这个时候，我们可以为我们切入的方法添加一个JoinPoint参数，通过此参数就可以快速获取切点位置的一些信息：
-
-```java
-public void afterStudy(JoinPoint point) {   //JoinPoint实例会被自动传入
-    //这里我们直接通过getArgs()返回的参数数组获取第1个参数
-    System.out.println("学什么"+point.getArgs()[0]+"，Rust天下第一！");
+    public void afterStudy(JoinPoint point) {   //JoinPoint实例会被自动传入
+    	//这里我们直接通过getArgs()返回的参数数组获取第1个参数
+    	System.out.println("学什么"+point.getArgs()[0]+"，Rust天下第一！");
+	}
 }
 ```
 
@@ -2361,7 +2354,7 @@ public interface DataSource  extends CommonDataSource, Wrapper {
 
 > 数据库链接的建立和关闭是极其耗费系统资源的操作，通过DriverManager获取的数据库连接，一个数据库连接对象均对应一个物理数据库连接，每次操作都打开一个物理连接，使用完后立即关闭连接，频繁的打开、关闭连接会持续消耗网络资源，造成整个系统性能的低下。
 
-因此，JDBC为我们定义了一个数据源的标准，也就是`DataSource`接口，告诉数据源数据库的连接信息，并将所有的连接全部交给数据源进行集中管理，当需要一个`Connection`对象时，可以向数据源申请，数据源会根据内部机制，合理地分配连接对象给我们。
+因此，JDBC为我们定义了一个数据源的标准，也就是`DataSource`接口，告诉数据源数据库的连接信息，并将**所有的连接全部交给数据源进行集中管理**，当需要一个`Connection`对象时，可以向数据源申请，数据源会根据内部机制，合理地分配连接对象给我们。
 
 一般比较常用的`DataSource`实现，都是采用池化技术，就是在一开始就创建好N个连接，这样之后使用就无需再次进行连接，而是直接使用现成的`Connection`对象进行数据库操作。
 
@@ -3147,7 +3140,6 @@ public class MainConfiguration {
 @Mapper
 public interface TestMapper {
     ...
-
     @Insert("insert into student(name, sex) values('测试', '男')")
     void insertStudent();
 }
@@ -3611,7 +3603,8 @@ protected <T> T doGetBean(String name, @Nullable Class<T> requiredType, @Nullabl
                 this.logger.trace("Returning cached instance of singleton bean '" + beanName + "'");
             }
         }
-				//这里getObjectForBeanInstance会进行最终处理
+		
+        //这里getObjectForBeanInstance会进行最终处理
       	//因为Bean有两个特殊的类型，工厂Bena和空Bean，所以说需要单独处理
       	//如果是普通Bean直接原样返回beanInstance接收到最终结果
         beanInstance = this.getObjectForBeanInstance(sharedInstance, name, beanName, (RootBeanDefinition)null);
@@ -3784,7 +3777,7 @@ public class TestServiceImpl implements TestService{
 
 [Bean定义]首先扫描Bean，加载Bean定义 -> [依赖注入]根据Bean定义通过反射创建Bean实例 -> [依赖注入]进行依赖注入（顺便解决循环依赖问题）-> [初始化Bean]BeanPostProcessor的初始化之前方法 -> [初始化Bean]Bean初始化方法 -> [初始化Bean]BeanPostProcessor的初始化之后方法 -> [完成]最终得到的Bean加载完成的实例
 
-利用这种机制，理解Aop的实现过程就非常简单了，AOP实际上也是通过这种机制实现的，它的实现类是`AnnotationAwareAspectJAutoProxyCreator`，而它就是在最后对Bean进行了代理，因此最后我们得到的结果实际上就是一个动态代理的对象（有关详细实现过程，这里就不进行列举了，感兴趣的可以继续深入）因此，实际上之前设计的三层缓存，都是由于需要处理AOP设计的，因为在Bean创建得到最终对象之前，很有可能会被PostProcessor给偷梁换柱！
+利用这种机制，理解Aop的实现过程就非常简单了，AOP实际上也是通过这种机制实现的，它的实现类是`AnnotationAwareAspectJAutoProxyCreator`，而它就是在最后对Bean进行了代理，因此最后我们**得到的结果实际上就是一个动态代理的对象**（有关详细实现过程，这里就不进行列举了，感兴趣的可以继续深入）因此，实际上之前设计的三层缓存，都是由于需要处理AOP设计的，因为在Bean创建得到最终对象之前，很有可能会被PostProcessor给偷梁换柱！
 
 那么肯定有人有疑问了，这个类没有被注册啊，那按理说它不应该参与到Bean的初始化流程中的，为什么它直接就被加载了呢？
 
