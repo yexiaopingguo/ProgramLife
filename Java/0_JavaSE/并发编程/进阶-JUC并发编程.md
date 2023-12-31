@@ -102,6 +102,8 @@ public static void main(String[] args) {
 
 ## 锁机制
 
+[Java中的锁 - 偏向锁、轻量级锁、自旋锁、重量级锁]: https://blog.csdn.net/zqz_zqz/article/details/70233767?utm_source=miniapp_weixin
+
 谈到锁机制，相信各位应该并不陌生了，我们在JavaSE阶段，通过使用`synchronized`关键字来实现锁，这样就能够很好地解决线程之间争抢资源的情况。那么，`synchronized`底层到底是如何实现的呢？
 
 我们知道，使用`synchronized`，一定是和某个对象相关联的，比如我们要对某一段代码加锁，那么我们就需要提供一个对象来作为锁本身：
