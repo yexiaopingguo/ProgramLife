@@ -1,4 +1,4 @@
-![image-20221004131436371](https://s2.loli.net/2022/10/04/SkAn9RQpqC4tVW5.png)
+![image-20221004131436371](img/1.png)
 
 ## Java I/O
 
@@ -38,7 +38,7 @@ JDK提供了一套用于IO操作的框架，为了方便我们开发者使用，
 
 ### 分类
 
-<img src="https://pdai.tech/images/io/java-io-category-3.png"  />
+<img src="img/2.png"  />
 
 ### 文件字节流
 
@@ -345,7 +345,7 @@ try (FileInputStream inputStream = new FileInputStream(file)){   //直接做参�
 
 虽然普通的文件流读取文件数据非常便捷，但是每次都需要从外部I/O设备去获取数据，由于外部I/O设备的速度一般都达不到内存的读取速度，很有可能造成程序反应迟钝，因此性能还不够高，而缓冲流正如其名称一样，它能够提供一个缓冲，提前将部分内容存入内存（缓冲区）在下次读取时，如果缓冲区中存在此数据，则无需再去请求外部设备。同理，当向外部设备写入数据时，也是由缓冲区处理，而不是直接向外部设备写入。
 
-![image-20221004125755217](https://s2.loli.net/2022/10/04/S8O61JP2lqKTzjd.png)
+![image-20221004125755217](img/3.png)
 
 要创建一个缓冲字节流，只需要将原本的流作为构造参数传入BufferedInputStream即可：
 
@@ -591,7 +591,7 @@ public static void main(String[] args) {
 
 我们平时使用的`println`方法就是PrintStream中的方法，它会直接打印基本数据类型或是调用对象的`toString()`方法得到一个字符串，并将字符串转换为字符，放入缓冲区再经过转换流输出到给定的输出流上。
 
-![img](https://s2.loli.net/2022/10/04/w8RKJxLm6Ik5usn.png)
+![img](img.png)
 
 因此实际上内部还包含这两个内容：
 

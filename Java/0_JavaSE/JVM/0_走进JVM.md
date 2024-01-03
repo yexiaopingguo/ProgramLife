@@ -14,15 +14,15 @@ JVM相对于Java应用层的学习难度更大，**开篇推荐掌握的预备�
 
 此阶段，我们需要深入探讨Java的底层执行原理，了解Java程序运行的本质。开始之前，推荐各位都入手一本《深入理解Java虚拟机 第三版》这本书对于JVM的讲述非常地详细：
 
-![点击查看图片来源](https://s2.loli.net/2023/03/06/b8TSFRoZayuUOlQ.jpg)
+![点击查看图片来源](img/1.jpg)
 
 我们在JavaSE阶段的开篇就进行介绍了，我们的Java程序之所以能够实现跨平台，本质就是因为它是运行在虚拟机之上的，而不同平台只需要安装对应平台的Java虚拟机即可运行（在JRE中包含），所有的Java程序都采用统一的标准，在任何平台编译出来的字节码文件(.class)也是同样的，最后实际上是将编译后的字节码交给JVM处理执行。
 
-![点击查看图片来源](https://s2.loli.net/2023/03/06/SgBybA8xC3MrD6k.jpg)
+![点击查看图片来源](img/16.png)
 
 也正是得益于这种统一规范，除了Java以外，还有多种JVM语言，比如Kotlin、Groovy等，它们的语法虽然和Java不一样，但是最终编译得到的字节码文件，和Java是同样的规范，同样可以交给JVM处理。
 
-![点击查看图片来源](https://s2.loli.net/2023/03/06/vNoWyDGsuwY23OE.jpg)
+![点击查看图片来源](img/17.png)
 
 所以，JVM是我们需要去关注的一个部分，通过了解Java的底层运作机制，我们的技术会得到质的提升。
 
@@ -32,7 +32,7 @@ JVM相对于Java应用层的学习难度更大，**开篇推荐掌握的预备�
 
 并且Java虚拟机并没有采用传统的PC架构，比如现在的HotSpot虚拟机，实际上采用的是`基于栈的指令集架构`，而我们的传统程序设计一般都是`基于寄存器的指令集架构`，这里我们需要回顾一下`计算机组成原理`中的CPU结构：
 
-![image-20230306164318560](https://s2.loli.net/2023/03/06/FuCI49TPSRpaitE.png)
+![image-20230306164318560](img/15.png)
 
 其中，**AX，BX，CX，DX 称作为数据寄存器：**
 
@@ -267,7 +267,7 @@ JVM运行字节码时，所有的操作基本都是围绕两种数据结构，�
 
 这个时候我们就需要更加高效的方式来运行Java程序，随着后面的发展，现在大多数的主流的JVM都包含即时**编译器**。JVM会根据当前代码的进行判断，当虚拟机发现某个方法或代码块的运行特别频繁时，就会把这些代码认定为“热点代码”。为了提高热点代码的执行效率，在运行时，虚拟机将会把这些代码编译成与本地平台相关的机器码，并进行各种层次的优化，完成这个任务的编译器称为即时编译器（Just In Time Compiler）
 
-![img](https://s2.loli.net/2023/03/06/JcfyIZm85AXECoh.jpg)
+![img](img/14.png)
 
 在JDK1.4时，Sun Classic VM完全退出了历史舞台，取而代之的是至今都在使用的HotSpot VM，它是目前使用最广泛的虚拟机，拥有上面所说的热点代码探测技术、准确式内存管理（虚拟机可以知道内存中某个位置的数据具体是什么类型）等技术，而我们之后的章节都是基于HotSpot虚拟机进行讲解。
 
@@ -275,7 +275,7 @@ JVM运行字节码时，所有的操作基本都是围绕两种数据结构，�
 
 2018年4月，Oracle Labs公开了最新的GraalVM，它是一种全新的虚拟机，它能够实现所有的语言统一运行在虚拟机中。
 
-![img](https://s2.loli.net/2023/03/06/BKqTOH8RrjoAWMw.jpg)
+![img](img/13.png)
 
 Graal VM被官方称为“Universal VM”和“Polyglot VM”，这是一个在HotSpot虚拟机基础上增强而成的跨语言全栈虚拟机，可以作为“任何语言”的运行平台使用，这里“任何语言”包括了Java、Scala、Groovy、Kotlin等基于Java虚拟机之上的语言，还包括了C、C++、Rust等基于LLVM的语言，同时支持其他像JavaScript、Ruby、Python和R语言等等。Graal VM可以无额外开销地混合使用这些编程语言，支持不同语言中混用对方的接口和对象，也能够支持这些语言使用已经编写好的本地库文件。
 
@@ -553,11 +553,11 @@ Finished building OpenJDK for target 'all'
 
 接着我们就可以创建一个测试配置了，首先打开设置页面，找到`自定义构建目标`：
 
-![image-20230306164504510](https://s2.loli.net/2023/03/06/TAcqg1Sx3KwOQZz.png)
+![image-20230306164504510](img/2.png)
 
 点击`应用`即可，接着打开运行配置，添加一个新的自定义配置：
 
-![image-20230306164521873](https://s2.loli.net/2023/03/06/FbEYsV1zvIf9TWl.png)
+![image-20230306164521873](img/3.png)
 
 选择我们编译完成的java程序，然后测试-version查看版本信息，去掉下方的构建。
 
@@ -574,7 +574,7 @@ Process finished with exit code 0
 
 我们可以将工作目录修改到其他地方，接着我们创建一个Java文件并完成编译，然后测试能否使用我们编译的JDK运行：
 
-![image-20230306164535518](https://s2.loli.net/2023/03/06/YZcxklCK7hvnapV.png)
+![image-20230306164535518](img/4.png)
 
 在此目录下编写一个Java程序，然后编译：
 
@@ -605,11 +605,11 @@ Process finished with exit code 0
 
 我们还可以在CLion前端页面中进行断点调试，比如我们测试一个入口点JavaMain，在`jdk/src/share/bin/java.c`中的JavaMain方法：
 
-![image-20230306164549328](https://s2.loli.net/2023/03/06/AcdjJWy8QnxlTa4.png)
+![image-20230306164549328](img/5.png)
 
 点击右上角调试按钮，可以成功进行调试：
 
-![image-20230306164602205](https://s2.loli.net/2023/03/06/tZzqg2GD3LSbn9o.png)
+![image-20230306164602205](img/6.png)
 
 至此，在Ubuntu系统上手动编译OpenJDK8完成。
 
@@ -919,21 +919,21 @@ LEAVE();
 
 至此，一个Java程序的运行流程结束，在最后LEAVE函数中会销毁JVM。我们可以进行断点调试来查看是否和我们推出的结论一致：
 
-![image-20230306164622940](https://s2.loli.net/2023/03/06/DgkhOvWYfAiB1yq.png)
+![image-20230306164622940](img/7.png)
 
 还是以我们之前编写的测试类进行，首先来到调用之前，我们看到主方法执行之前，控制台没有输出任何内容，接着我们执行此函数，再来观察控制台的变化：
 
-![image-20230306164639620](https://s2.loli.net/2023/03/06/X3F2Hjvplnm17UJ.png)
+![image-20230306164639620](img/8.png)
 
 可以看到，主方法执行完成之后，控制台也成功输出了Hello World！
 
 继续下一步，整个Java程序执行完成，得到退出状态码`0`：
 
-![image-20230306164706976](https://s2.loli.net/2023/03/06/SoP1fVekqM4R8sd.png)
+![image-20230306164706976](img/9.png)
 
 成功验证，最后总结一下整个执行过程：
 
-![image-20230306164716949](https://s2.loli.net/2023/03/06/c4IKjgrhtw3ak9p.png)
+![image-20230306164716949](img/10.png)
 
 ***
 
@@ -999,7 +999,7 @@ add_executable(JNITest com_test_Main.cpp com_test_Main.h)
 
 接着就可以编写实现了，首先认识一下引用类型对照表：
 
-![image-20230306164733817](https://s2.loli.net/2023/03/06/QS9FxGhdsMRBCcm.png)
+![image-20230306164733817](img/11.png)
 
 所以我们这里直接返回 a + b 即可：
 
@@ -1038,6 +1038,6 @@ public class Main {
 
 运行，成功得到结果：
 
-![image-20230306164747347](https://s2.loli.net/2023/03/06/AdKbxHjlGwDfUY2.png)
+![image-20230306164747347](img/12.png)
 
 通过了解JVM的一些基础知识，我们心目中大致有了一个JVM的模型，在下一章，我们将继续深入学习JVM的内存管理机制和垃圾收集器机制，以及一些实用工具。
