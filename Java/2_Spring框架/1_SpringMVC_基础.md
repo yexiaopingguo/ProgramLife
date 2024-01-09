@@ -306,7 +306,7 @@ public class HelloController {
 
 [IDEA与Tomcat编码不一致导致的中文问题]: https://www.jianshu.com/p/f87b6301d668
 
-<img src="./img/chinese_problem.png" style="zoom: 80%;" />
+<img src="./img/8.png" style="zoom: 80%;" />
 
 
 

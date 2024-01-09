@@ -1055,6 +1055,14 @@ public PersistentTokenRepository tokenRepository(DataSource dataSource){
 }
 ```
 
+```java
+@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http,
+                                           PersistentTokenRepository repository) throws Exception {
+    	...
+    }
+```
+
 然后添加此仓库：
 
 ```java

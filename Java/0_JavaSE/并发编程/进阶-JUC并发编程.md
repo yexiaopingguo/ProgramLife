@@ -70,13 +70,13 @@ public static void main(String[] args) {
 
 比如现在一共有三个工作需要我们去完成。
 
-![image-20230306170832622](https://s2.loli.net/2023/03/06/bsQEvfPJ2nCyqo7.png)
+![](img/14.png)
 
 ### 顺序执行
 
 顺序执行其实很好理解，就是我们依次去将这些任务完成了：
 
-![image-20230306170844108](https://s2.loli.net/2023/03/06/aqFZsOuv1T5RftP.png)
+![](img/15.png)
 
 实际上就是我们同一时间只能处理一个任务，所以需要前一个任务完成之后，才能继续下一个任务，依次完成所有任务。
 
@@ -84,7 +84,7 @@ public static void main(String[] args) {
 
 并发执行也是我们同一时间只能处理一个任务，但是我们可以每个任务轮着做（时间片轮转）：
 
-![image-20230306170855087](https://s2.loli.net/2023/03/06/FSjYJ1HkVd7hqrZ.png)
+![](img/16.png)
 
 只要我们单次处理分配的时间足够的短，在宏观看来，就是三个任务在同时进行。
 
@@ -94,7 +94,7 @@ public static void main(String[] args) {
 
 并行执行就突破了同一时间只能处理一个任务的限制，我们同一时间可以做多个任务：
 
-![image-20230306170906719](https://s2.loli.net/2023/03/06/xV54YwECvrFmAn8.png)
+![](img/17.png)
 
 比如我们要进行一些排序操作，就可以用到并行计算，只需要等待所有子任务完成，最后将结果汇总即可。包括分布式计算模型MapReduce，也是采用的并行计算思路。
 
@@ -118,7 +118,7 @@ public static void main(String[] args) {
 
 我们来看看，它变成字节码之后会用到哪些指令：
 
-![image-20230306170923799](https://s2.loli.net/2023/03/06/NFQ1m6gpz5WEZxV.png)
+![](img/18.png)
 
 其中最关键的就是`monitorenter`指令了，可以看到之后也有`monitorexit`与之进行匹配（注意这里有2个），`monitorenter`和`monitorexit`分别对应加锁和释放锁，在执行`monitorenter`之前需要尝试获取锁，每个对象都有一个`monitor`监视器与之对应，而这里正是去获取对象监视器的所有权，一旦`monitor`所有权被某个线程持有，那么其他线程将无法获得（管程模型的一种实现）。
 
@@ -126,13 +126,13 @@ public static void main(String[] args) {
 
 首先我们来看第一个，这里在释放锁之后，会马上进入到一个goto指令，跳转到15行，而我们的15行对应的指令就是方法的返回指令，其实正常情况下只会执行第一个`monitorexit`释放锁，在释放锁之后就接着同步代码块后面的内容继续向下执行了。而第二个，其实是用来处理异常的，可以看到，它的位置是在12行，如果程序运行发生异常，那么就会执行第二个`monitorexit`，并且会继续向下通过`athrow`指令抛出异常，而不是直接跳转到15行正常运行下去。
 
-![image-20230306170938130](https://s2.loli.net/2023/03/06/bYUPEDwoBdkSxi3.png)
+![](img/19.png)
 
 实际上`synchronized`使用的锁就是存储在Java对象头中的，我们知道，对象是存放在堆内存中的，而每个对象内部，都有一部分空间用于存储对象头信息，而对象头信息中，则包含了Mark Word用于存放`hashCode`和对象的锁信息，在不同状态下，它存储的数据结构有一些不同。
 
 对象头包含两部分：Mark Word 和 Class Metadata Address
 
-![image-20230306170949225](https://s2.loli.net/2023/03/06/w5kq4gbBHcCMv1L.png)
+![](img/20.png)
 
 ### 重量级锁
 
@@ -163,7 +163,7 @@ ObjectMonitor() {
 
 每个等待锁的线程都会被封装成ObjectWaiter对象，进入到如下机制：
 
-![image-20230306171005840](https://s2.loli.net/2023/03/06/OvufwzKx7l6yNMB.png)
+![](img/21.png)
 
 ObjectWaiter首先会进入 Entry Set等着，当线程获取到对象的`monitor`后进入 The Owner 区域并把`monitor`中的`owner`变量设置为当前线程，同时`monitor`中的计数器`count`加1，若线程调用`wait()`方法，将释放当前持有的`monitor`，`owner`变量恢复为`null`，`count`自减1，同时该线程进入 WaitSet集合中等待被唤醒。若当前线程执行完毕也将释放`monitor`并复位变量的值，以便其他线程进入获取对象的`monitor`。
 
@@ -175,7 +175,7 @@ ObjectWaiter首先会进入 Entry Set等着，当线程获取到对象的`monito
 
 在JDK1.4.2时，引入了自旋锁（JDK6之后默认开启），它不会将处于等待状态的线程挂起，而是通过无限循环的方式，不断检测是否能够获取锁，由于单个线程占用锁的时间非常短，所以说循环次数不会太多，可能很快就能够拿到锁并运行，这就是自旋锁。当然，仅仅是在等待时间非常短的情况下，自旋锁的表现会很好，但是如果等待时间太长，由于循环是需要处理器继续运算的，所以这样只会浪费处理器资源，因此自旋锁的等待时间是有限制的，默认情况下为10次，如果失败，那么会进而采用重量级锁机制。
 
-![image-20230306171016377](https://s2.loli.net/2023/03/06/9ifjs1mWwIxEKOP.png)
+![](img/22.png)
 
 在JDK6之后，自旋锁得到了一次优化，自旋的次数限制不再是固定的，而是自适应变化的，比如在同一个锁对象上，自旋等待刚刚成功获得过锁，并且持有锁的线程正在运行，那么这次自旋也是有可能成功的，所以会允许自旋更多次。当然，如果某个锁经常都自旋失败，那么有可能会不再采用自旋策略，而是直接使用重量级锁。
 
@@ -197,7 +197,7 @@ ObjectWaiter首先会进入 Entry Set等着，当线程获取到对象的`monito
 
 这时，轻量级锁一开始的想法就是错的（这时有对象在竞争资源，为了避免反复自旋），只能将锁膨胀为重量级锁，按照重量级锁的操作执行（注意锁的膨胀是不可逆的）
 
-![image-20230306171031953](https://s2.loli.net/2023/03/06/p54mXYhWdGbiVfn.png)
+![](img/23.png)
 
 所以，轻量级锁 -> 失败 -> 自适应自旋锁 -> 失败 -> 重量级锁
 
@@ -219,7 +219,7 @@ ObjectWaiter首先会进入 Entry Set等着，当线程获取到对象的`monito
 
 值得注意的是，如果对象通过调用`hashCode()`方法计算过对象的一致性哈希值，那么它是不支持偏向锁的，会直接进入到轻量级锁状态，因为Hash是需要被保存的，而偏向锁的Mark Word数据结构，无法保存Hash值；如果对象已经是偏向锁状态，再去调用`hashCode()`方法，那么会直接将锁升级为重量级锁，并将哈希值存放在`monitor`（有预留位置保存）中。
 
-![image-20230306171047283](https://s2.loli.net/2023/03/06/1fQs3C5BKZgamc9.png)
+![](img/24.png)
 
 ### 锁消除和锁粗化
 
@@ -235,13 +235,13 @@ ObjectWaiter首先会进入 Entry Set等着，当线程获取到对象的`monito
 
 我们在`计算机组成原理`中学习过，在我们的CPU中，一般都会有高速缓存，而它的出现，是为了解决内存的速度跟不上处理器的处理速度的问题，所以CPU内部会添加一级或多级高速缓存来提高处理器的数据获取效率，但是这样也会导致一个很明显的问题，因为现在基本都是多核心处理器，每个处理器都有一个自己的高速缓存，那么又该怎么去保证每个处理器的高速缓存内容一致呢？
 
-![image-20230306171105367](https://s2.loli.net/2023/03/06/Kj2CiIVNOkpG3FS.png)
+![](img/25.png)
 
 为了解决缓存一致性的问题，需要各个处理器访问缓存时都遵循一些协议，在读写时要根据协议来进行操作，这类协议有MSI、MESI（Illinois Protocol）、MOSI、Synapse、Firefly及Dragon Protocol等。
 
 而Java也采用了类似的模型来实现支持多线程的内存模型：
 
-![image-20230306171115671](https://s2.loli.net/2023/03/06/UMkWgFatBoLsfr5.png)
+![](img/26.png)
 
 JMM（Java Memory Model）内存模型规定如下：
 
@@ -281,11 +281,11 @@ public class Main {
 
 那么为什么会这样呢？在之前学习了JVM之后，相信各位应该已经知道，自增操作实际上并不是由一条指令完成的（注意一定不要理解为一行代码就是一个指令完成的）：
 
-![image-20230306171129517](https://s2.loli.net/2023/03/06/2kHoMV1bLOGRe8y.png)
+![](img/27.png)
 
 包括变量`i`的获取、修改、保存，都是被拆分为一个一个的操作完成的，那么这个时候就有可能出现在修改完保存之前，另一条线程也保存了，但是当前线程是毫不知情的。
 
-![image-20230306171140325](https://s2.loli.net/2023/03/06/x1O9jinomM3K2dF.png)
+![](img/28.png)
 
 所以说，我们当时在JavaSE阶段讲解这个问题的时候，是通过`synchronized`关键字添加同步代码块解决的，当然，我们后面还会讲解另外的解决方案（原子类）
 
@@ -459,7 +459,7 @@ public class Main {
 >
 > 由于编译器和处理器都能执行指令重排的优化，如果在指令间插入一条Memory Barrier则会告诉编译器和CPU，不管什么指令都不能和这条Memory Barrier指令重排序。
 >
-> ![image-20230306171216983](https://s2.loli.net/2023/03/06/upc28A41DwCBNO9.png)
+> ![](img/29.png)
 >
 > | 屏障类型   | 指令示例                 | 说明                                                         |
 > | ---------- | ------------------------ | ------------------------------------------------------------ |
@@ -1052,7 +1052,7 @@ AbstractQueuedSynchronizer（下面称为AQS）是实现锁机制的基础，它
 
 一个锁（排他锁为例）的基本功能就是获取锁、释放锁、当锁被占用时，其他线程来争抢会进入等待队列，AQS已经将这些基本的功能封装完成了，其中等待队列是核心内容，等待队列是由双向链表数据结构实现的，每个等待状态下的线程都可以被封装进结点中并放入双向链表中，而对于双向链表是以队列的形式进行操作的，它像这样：
 
-![image-20230306171328049](https://s2.loli.net/2023/03/06/KMmHZ6g7xVO5zcG.png)
+![](img/30.png)
 
 AQS中有一个`head`字段和一个`tail`字段分别记录双向链表的头结点和尾结点，而之后的一系列操作都是围绕此队列来进行的。我们先来了解一下每个结点都包含了哪些内容：
 
@@ -1429,7 +1429,7 @@ protected final boolean tryRelease(int releases) {
 
 综上，我们来画一个完整的流程图：
 
-![image-20230306171428206](https://s2.loli.net/2023/03/06/fUmwyGTRdCKAOlM.png)
+![](img/31.png)
 
 这里我们只讲解了公平锁，有关非公平锁和读写锁，还请各位观众根据我们之前的思路，自行解读。
 
@@ -1515,7 +1515,7 @@ public final boolean hasQueuedPredecessors() {
 
 一张图就是：
 
-![image-20230814160110441](https://s2.loli.net/2023/08/14/5IwjDocXvHpkW8O.png)
+![](img/32.png)
 
 因此公不公平全看`hasQueuedPredecessors()`，而此方法只有在等待队列中存在节点时才能保证不会出现问题。所以公平锁，只有在等待队列存在节点时，才是真正公平的。
 
@@ -1538,7 +1538,7 @@ public class ConditionObject implements Condition, java.io.Serializable {
 
 这里是直接使用了AQS中的Node类，但是使用的是Node类中的nextWaiter字段连接节点，并且Node的status为CONDITION：
 
-![image-20230306171600419](https://s2.loli.net/2023/03/06/h7z96EeqVvpHOLQ.png)
+![](img/33.png)
 
 我们知道，当一个线程调用`await()`方法时，会进入等待状态，直到其他线程调用`signal()`方法将其唤醒，而这里的条件队列，正是用于存储这些处于等待状态的线程。
 
@@ -1582,7 +1582,7 @@ public final void await() throws InterruptedException {
 * 唤醒操作本质上是将条件队列中的结点直接丢进AQS等待队列中，让其参与到锁的竞争中
 * 拿到锁之后，线程才能恢复运行
 
-![image-20230306171620786](https://s2.loli.net/2023/03/06/UjG1Dd5xNJhIyWm.png)
+![](img/34.png)
 
 好了，上源码：
 
@@ -1640,7 +1640,7 @@ final boolean transferForSignal(Node node) {
 
 所以，大致流程下：
 
-![image-20230306171643082](https://s2.loli.net/2023/03/06/w9hvtNyAM74pO8m.png)
+![](img/35.png)
 
 只要把整个流程理清楚，还是很好理解的。
 
@@ -1852,7 +1852,7 @@ public final int getAndAddInt(Object o, long offset, int delta) {  //delta就是
 
 可以看到这是一个`do-while`循环，那么这个循环在做一个什么事情呢？感觉就和我们之前讲解的AQS队列中的机制差不多，也是**采用自旋形式**，来不断进行CAS操作，直到成功。
 
-![image-20230306171720896](https://s2.loli.net/2023/03/06/JL3ZjbmwFW67tOM.png)
+![](img/36.png)
 
 可见，原子类底层也是采用了CAS算法来保证的原子性，包括`getAndSet`、`getAndAdd`等方法都是这样。原子类也直接提供了CAS操作方法，我们可以直接使用：
 
@@ -1896,7 +1896,7 @@ public static void main(String[] args) throws InterruptedException {
 
 在JDK8之后，新增了`DoubleAdder`和`LongAdder`，在高并发情况下，`LongAdder`的性能比`AtomicLong`的性能更好，主要体现在自增上，它的大致原理如下：在低并发情况下，和`AtomicLong`是一样的，对value值进行CAS操作，但是出现高并发的情况时，`AtomicLong`会进行大量的循环操作来保证同步，而`LongAdder`会将对value值的CAS操作分散为对数组`cells`中多个元素的CAS操作（内部维护一个Cell[] as数组，每个Cell里面有一个初始值为0的long型变量，在高并发时会进行分散CAS，就是不同的线程可以对数组中不同的元素进行CAS自增，这样就避免了所有线程都对同一个值进行CAS），只需要最后再将结果加起来即可。
 
-![image-20230306171732740](https://s2.loli.net/2023/03/06/KksGxhMYABe7nED.png)
+![](img/37.png)
 
 使用如下：
 
@@ -1990,7 +1990,7 @@ public class Main {
 
 我们来想象一下这种场景：
 
-![image-20230306171801800](https://s2.loli.net/2023/03/06/KQjEvX1ZxohMT3l.png)
+![](img/38.png)
 
 线程1和线程2同时开始对`a`的值进行CAS修改，但是线程1的速度比较快，将a的值修改为2之后紧接着又修改回1，这时线程2才开始进行判断，发现a的值是1，所以CAS操作成功。
 
@@ -2157,17 +2157,17 @@ public static void main(String[] args) throws InterruptedException {
 
 可以看到这里的ConcurrentHashMap就没有出现之前HashMap的问题了。因为线程之间会争抢同一把锁，我们之前在讲解LongAdder的时候学习到了一种压力分散思想，既然每个线程都想抢锁，那我就干脆多搞几把锁，让你们每个人都能拿到，这样就不会存在等待的问题了，而JDK7之前，ConcurrentHashMap的原理也比较类似，它将所有数据分为一段一段地存储，先分很多段出来，每一段都给一把锁，当一个线程占锁访问时，只会占用其中一把锁，也就是仅仅锁了一小段数据，而其他段的数据依然可以被其他线程正常访问。
 
-![image-20230306171955430](https://s2.loli.net/2023/03/06/elxSQDBkcmqWtGU.png)
+![](img/39.png)
 
 这里我们重点讲解JDK8之后它是怎么实现的，它采用了CAS算法配合锁机制实现，我们先来回顾一下JDK8下的HashMap是什么样的结构：
 
-![img](https://s2.loli.net/2023/08/14/bI7At2sXqRwjolF.jpg)
+![](img/40.png)
 
 HashMap就是利用了哈希表，哈希表的本质其实就是一个用于存放后续节点的头结点的数组，数组里面的每一个元素都是一个头结点（也可以说就是一个链表），当要新插入一个数据时，会先计算该数据的哈希值，找到数组下标，然后创建一个新的节点，添加到对应的链表后面。当链表的长度达到8时，会自动将链表转换为红黑树，这样能使得原有的查询效率大幅度降低！当使用红黑树之后，我们就可以利用二分搜索的思想，快速地去寻找我们想要的结果，而不是像链表一样挨个去看。
 
 又是基础不牢地动山摇环节，由于ConcurrentHashMap的源码比较复杂，所以我们先从最简单的构造方法开始下手：
 
-![image-20230306172041623](https://s2.loli.net/2023/03/06/DEFR3d6gzOf7oNs.png)
+![](img/41.png)
 
 我们发现，它的构造方法和HashMap的构造方法有很大的出入，但是大体的结构和HashMap是差不多的，也是维护了一个哈希表，并且哈希表中存放的是链表或是红黑树，所以我们直接来看`put()`操作是如何实现的，只要看明白这个，基本上就懂了：
 
@@ -2220,7 +2220,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 
 怎么样，是不是感觉看着挺复杂，其实也还好，总结一下就是：
 
-![image-20230306172102878](https://s2.loli.net/2023/03/06/qvRH4wsIi9fczVh.png)
+![](img/42.png)
 
 我们接着来看看`get()`操作：
 
@@ -2300,7 +2300,7 @@ public interface BlockingQueue<E> extends Queue<E> {
 
 比如现在有一个容量为3的阻塞队列，这个时候一个线程`put`向其添加了三个元素，第二个线程接着`put`向其添加三个元素，那么这个时候由于容量已满，会直接被阻塞，而这时第三个线程从队列中取走2个元素，线程二停止阻塞，先丢两个进去，还有一个还是进不去，所以说继续阻塞。
 
-![image-20230306172123711](https://s2.loli.net/2023/03/06/nRik6PHxY24Nlzr.png)
+![](img/43.png)
 
 利用阻塞队列，我们可以轻松地实现消费者和生产者模式，还记得我们在JavaSE中的实战吗？
 
@@ -2587,7 +2587,7 @@ E transfer(E e, boolean timed, long nanos) {   //注意这里面没加锁，肯�
 
 所以，总结为以下流程：
 
-![image-20230306172203832](https://s2.loli.net/2023/03/06/Dp7d5X28RK6xrzl.png)
+![](img/44.png)
 
 对于非公平模式下的SynchronousQueue，则是采用的栈结构来存储等待节点，但是思路也是与这里的一致，需要等待并进行匹配操作，各位如果感兴趣可以继续了解一下非公平模式下的SynchronousQueue实现。
 
@@ -2790,7 +2790,7 @@ public static void main(String[] args) {
 
 所以我们可以暂时得到下面一个样子：
 
-![image-20230306172249412](https://s2.loli.net/2023/03/06/ogcqAkahnWYByE2.png)
+![](img/45.png)
 
 当然，JUC提供的线程池肯定没有这么简单，接下来就让我们深入进行了解。
 
@@ -3334,7 +3334,7 @@ private static int ctlOf(int rs, int wc) { return rs | wc; }
 // 111 | 0000000000000000000000000
 ```
 
-![image-20230306172347411](https://s2.loli.net/2023/03/06/yoFvxQJq84G6dcH.png)
+![](img/46.png)
 
 我们先从最简单的入手，看看在调用`execute`方法之后，线程池会做些什么：
 
@@ -4300,7 +4300,7 @@ public static void main(String[] args) throws InterruptedException {
 
 我们来演示一下实际的情况，比如一个算式：18x7+36x8+9x77+8x53，可以拆分为四个小任务：18x7、36x8、9x77、8x53，最后我们只需要将这四个任务的结果加起来，就是我们原本算式的结果了，有点归并排序的味道。
 
-![image-20230306172442485](https://s2.loli.net/2023/03/06/l6iXQ4N2TfnZDMJ.png)
+![](img/47.png)
 
 它不仅仅只是拆分任务并使用多线程，而且还可以利用工作窃取算法，提高线程的利用率。
 
@@ -4308,7 +4308,7 @@ public static void main(String[] args) throws InterruptedException {
 >
 > 被窃取任务线程永远从双端队列的头部拿任务执行，而窃取任务的线程永远从双端队列的尾部拿任务执行。
 
-![image-20230306172457006](https://s2.loli.net/2023/03/06/DP7yj6pBZFGLoQb.png)
+![](img/48.png)
 
 现在我们来看看如何使用它，这里以计算1-1000的和为例，我们可以将其拆分为8个小段的数相加，比如1-125、126-250... ，最后再汇总即可，它也是依靠线程池来实现的：
 
