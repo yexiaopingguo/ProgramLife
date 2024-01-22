@@ -81,6 +81,8 @@ Windows无疑是现在最广泛的操作系统，尤其是Windows XP，是多少
 
 ### 使用SSH远程连接
 
+[Xshell和Xftp使用教程]: https://blog.csdn.net/qq_36410795/article/details/105485901
+
 如果你使用的是树莓派或是云服务器，那么你会得到一个公网的IP地址，以及默认的用户名和密码，由于服务器安装的Ubuntu并不是在我们的电脑上运行的，那么我们怎么去远程操作呢？
 
 比如我们要远程操作一台Windows电脑，直接使用远程桌面连接即可，但是Ubuntu上来就是命令行，这种情况下要实现远程连接就只能使用SSH终端。
@@ -326,6 +328,8 @@ drwx------ 3 test test 4096 Jan 23 14:49 .config
 
 比如`drwxr-xr-x`就表示这是一个目录，文件的拥有者可以在目录中读、写和执行，而同一用户组的其他用户只能读和执行，其他用户也是一样。
 
+#### ln 创建链接文件
+
 第二栏数据可以看到是一列数字，它表示文件创建的链接文件（快捷方式）数量，一般只有1表示只有当前文件，我们也可以尝试创建一个链接文件：
 
 ```sh
@@ -348,6 +352,10 @@ test@ubuntu-server:~$ ln .bash_logout kk
 
 ![img](https://s2.loli.net/2023/03/06/Bi1IrRQwhvGAHPq.jpg)
 
+#### touch 创建文件
+
+#### ll 列出文件参数
+
 那么，如果我们希望对文件的属性进行修改，比如我们现在希望将某个文件的写权限给关闭，可以使用`chmod`命令来进行文件属性修改，我们先创建一个test文件，使用`touch`命令来创建文件，使用`mkdir`命令来创建目录：
 
 ```shell
@@ -355,6 +363,8 @@ test@ubuntu-server:~$ touch test
 test@ubuntu-server:~$ ll test
 -rw-rw-r-- 1 test test 0 Jan 24 09:32 test
 ```
+
+#### chmod 修改文件权限
 
 可以看到文件创建之后的默认权限为可读可写，接着我们来将其修改为只读，chmod的使用方法如下：
 
@@ -378,13 +388,22 @@ test@ubuntu-server:~$ ll test
 -rw-rw-r-- 1 test test 0 Jan 24 09:32 test
 ```
 
-如果我们想修改文件的拥有者或是所属组，可以使用`chown`和`chgrp`命令：
+#### chown 修改文件拥有者
+
+如果我们想修改文件的拥有者，可以使用`chown`命令：
 
 ```sh
 test@ubuntu-server:~$ sudo chown root test 
 test@ubuntu-server:~$ ls -l
 total 0
 -rw-rw-r-- 1 root test 0 Jan 24 10:43 test
+```
+
+#### chgrp 修改文件属组
+
+修改文件的是所属组，用`chgrp`命令：
+
+```sh
 test@ubuntu-server:~$ sudo chgrp root test 
 test@ubuntu-server:~$ ls -l
 total 0
@@ -406,6 +425,8 @@ test@ubuntu-server:~$ cd study
 test@ubuntu-server:~/study$
 ```
 
+#### cp 文件复制
+
 首先我们演示文件的复制操作，文件的复制使用`cp`命令，比如现在我们想把上一级目录中的test文件复制到当前目录中：
 
 ```sh
@@ -413,6 +434,8 @@ test@ubuntu-server:~/study$ cp ../test test
 test@ubuntu-server:~/study$ ls
 test
 ```
+
+#### cp -r 文件目录复制
 
 那么如果我们想要将一整个目录进行复制呢？我们需要添加一个`-r`参数表示将目录中的文件递归复制：
 
@@ -427,6 +450,8 @@ drwxrwxr-x 2 test test 4096 Jan 24 10:20 study_copied
 ```
 
 可以看到我们的整个目录中所有的文件也一起被复制了。
+
+#### mv 文件移动/重命名
 
 接着我们来看看移动操作，相当于是直接将一个文件转移到另一个目录中了，我们再创建一个目录用于文件的移动，并将test文件移动到此目录中，我们使用`mv`命令进行文件的移动：
 
@@ -461,6 +486,8 @@ test@ubuntu-server:~/study2$ ls
 study  yyds
 ```
 
+#### rm 删除
+
 最后就是删除命令了，使用`rm`进行删除操作，比如现在我们想删除study2目录（注意需要添加-r参数表示递归删除文件夹中的内容）：
 
 ```sh
@@ -480,7 +507,9 @@ test@ubuntu-server:~$ ls
 test@ubuntu-server:~$ 
 ```
 
-最后我们再来看文件的搜索，我们使用find命令来进行搜索，比如我想搜索/etc目录下名为passwd的文件：
+#### find 文件搜索
+
+最后我们再来看文件的搜索，我们使用`find`命令来进行搜索，比如我想搜索/etc目录下名为passwd的文件：
 
 ```
 test@ubuntu-server:~$ sudo find /etc -name passwd
@@ -507,6 +536,8 @@ test@ubuntu-server:~$ sudo find /etc -name s*
 ```
 
 ### 系统管理
+
+#### top CPU/内存的使用情况
 
 接着我们来查看一些系统管理相关的命令，比如我们Windows中的任务管理器，我们可以使用`top`命令来打开：
 
@@ -557,6 +588,8 @@ Fields Management for window 1:Def, whose current sort field is %MEM
 
 按下q键即可退出监控界面。
 
+#### free 内存使用情况
+
 我们可以直接输入free命令来查看当前系统的内存使用情况：
 
 ```
@@ -567,6 +600,8 @@ Swap:          3922           0        3922
 ```
 
 其中-m表示以M为单位，也可以-g表示以G为单位，默认是kb为单位。
+
+#### lsblk 块设备信息(磁盘容量)
 
 最后就是磁盘容量，我们可以使用`lsblk`来查看所有块设备的信息，其中就包括我们的硬盘、光驱等：
 
@@ -590,7 +625,11 @@ nvme0n1                   259:0    0   20G  0 disk
 
 > 挂载，指的就是将设备文件中的顶级目录连接到 Linux 根目录下的某一目录（最好是空目录），访问此目录就等同于访问设备文件。
 
-比如我们的主硬盘，挂载点就被设定为`/`根目录，而我们所有保存的文件都会存储在硬盘中，如果你有U盘（最好将U盘的文件格式改为ExFat，可以直接在Windows中进行格式化，然后随便放入一些文件即可）之类的东西，我们可以演示一下对U盘进行挂载：
+比如我们的主硬盘，挂载点就被设定为`/`根目录，而我们所有保存的文件都会存储在硬盘中，如果你有U盘（最好将U盘的文件格式改为ExFat，可以直接在Windows中进行格式化，然后随便放入一些文件即可）之类的东西，我们可以演示一下对U盘进行挂载。
+
+#### sudo fdisk -l 查看硬盘情况
+
+将U盘插入电脑，选择连接到Linux，输入`sudo fdisk -l`命令来查看硬盘实体情况，可以看到有一个USB DISK设备，注意观察一下是不是和自己的U盘容量一致，可以看到设备名称为`/dev/sda1`：
 
 ```sh
 test@ubuntu-server:~$ sudo fdisk -l
@@ -608,7 +647,7 @@ Device     Boot     Start       End   Sectors  Size Id Type
 /dev/sda2       125214720 125825022    610303  298M  6 FAT16
 ```
 
-将U盘插入电脑，选择连接到Linux，输入`sudo fdisk -l`命令来查看硬盘实体情况，可以看到有一个USB DISK设备，注意观察一下是不是和自己的U盘容量一致，可以看到设备名称为`/dev/sda1`。
+#### mount 挂载目录
 
 接着我们设备挂载到一个目录下：
 
@@ -628,12 +667,16 @@ test@ubuntu-server:~/u-test$ ls
  zh-cn_windows_11_consumer_editions_x64_dvd_904f13e4.iso
 ```
 
+#### unmount 取消挂载
+
 最后进入到此目录中，就能看到你U盘中的文件了，如果你不想使用U盘了，可以直接取消挂载：
 
 ```
 test@ubuntu-server:~/u-test$ cd ..
 test@ubuntu-server:~$ sudo umount /dev/sda1
 ```
+
+#### df 当前磁盘使用情况
 
 最后我们可以通过`df`命令查看当前磁盘使用情况：
 
@@ -653,6 +696,8 @@ tmpfs                                  1960     0      1960   0% /sys/fs/cgroup
 /dev/loop2                               62    62         0 100% /snap/lxd/21032
 tmpfs                                   392     0       392   0% /run/user/1000
 ```
+
+#### ps 当前运行的进程
 
 输入`ps`可以查看当前运行的一些进程，其实和top有点类似，但是没有监控功能，只能显示当前的。
 
@@ -676,6 +721,8 @@ root           6       2  0 04:55 ?        00:00:00 [kworker/0:0H-kblockd]
 ...
 ```
 
+#### kill 终止进程
+
 我们可以找到对应的进程ID（PID），使用kill命令将其强制终止：
 
 ```
@@ -693,6 +740,8 @@ Connection to 192.168.10.6 closed.
 - 9 (KILL)：杀死一个进程。
 - 15 (TERM)：正常停止一个进程。
 
+#### shutdown 关机
+
 最后如果我们想要正常关机，只需要输入shutdown即可，系统会创建一个关机计划，并在指定时间关机，或是添加now表示立即关机：
 
 ```
@@ -708,7 +757,9 @@ Connection to 192.168.10.6 closed.
 
 比较常用的压缩和解压也是重点，我们在Windows中经常需要下载一些压缩包，并且将压缩包解压才能获得里面的文件，而Linux中也支持文件的压缩和解压。
 
-这里我们使用`tar`命令来完成文件亚索和解压操作，在Linux中比较常用的是gzip格式，后缀名一般为.gz，tar命令的参数-c表示对文件进行压缩，创建新的压缩文件，-x表示进行解压操作，-z表示以gzip格式进行操作，-v可以在处理过程中输出一些日志信息，-f表示对普通文件进行操作，这里我们创建三个文件并对这三个文件进行打包：
+#### tar 文件压缩和解压
+
+这里我们使用`tar`命令来完成文件压缩和解压操作，在Linux中比较常用的是gzip格式，后缀名一般为.gz，tar命令的参数-c表示对文件进行压缩，创建新的压缩文件，-x表示进行解压操作，-z表示以gzip格式进行操作，-v可以在处理过程中输出一些日志信息，-f表示对普通文件进行操作，这里我们创建三个文件并对这三个文件进行打包：
 
 ```sh
 test@ubuntu-server:~$ tar -zcvf test.tar.gz *.txt
@@ -1085,6 +1136,14 @@ test@ubuntu-server:~$ java -jar springboot-project-0.0.1-SNAPSHOT.jar
 ```
 
 现在我们将前端页面的API访问地址修改为我们的SpringBoot服务器地址，即可正常使用了。
+
+但是上面的部署方式存在一些问题：
+
+<img src="./img/78.png" style="zoom:75%;" />
+
+为了结束服务器，我们需要采用结束进程的方式：
+
+<img src="./img/79.png" style="zoom: 80%;" />
 
 我们也可以将我们的静态资源使用Nginx服务器进行代理：
 

@@ -8,6 +8,8 @@
 
 ![](./JavaStudyPlan/img/JavaRoute.png)
 
+> [2024黑马程序员Java学习路线图]: https://www.bilibili.com/read/cv9965357/
+
 
 
 ## **进阶学习**

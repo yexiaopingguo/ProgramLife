@@ -795,6 +795,8 @@ public class MainController {
 
 拦截器是整个SpringMVC的一个重要内容，拦截器与过滤器类似，都是用于拦截一些非法请求，但是我们之前讲解的过滤器是作用于Servlet之前，只有经过层层的过滤器才可以成功到达Servlet，而拦截器并不是在Servlet之前，它在Servlet与RequestMapping之间，相当于DispatcherServlet在将请求交给对应Controller中的方法之前进行拦截处理，它只会拦截所有Controller中定义的请求映射对应的请求（不会拦截静态资源），这里一定要区分两者的不同。
 
+> [过滤器和拦截器的区别]: https://blog.csdn.net/xinzhifu1/article/details/106356958/
+
 <img src="https://s2.loli.net/2023/06/30/6J3D98HdkawAOVK.png" alt="image-20230630194651686" style="zoom: 25%;" />
 
 Servlet与RequestMapping之间具体关系如下：

@@ -608,7 +608,7 @@ int addStudentAndSid(@Param(sid) int sid, @Param(student) Student student);
 
 
 
-## 十一、动态代理机制
+## 十一、动态代理探究（选学）
 
 Mybatis会自动帮我们实现类，实现类的名称为`com.sun.proxy.$Proxy4`，原理如下：
 
