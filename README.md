@@ -1,20 +1,6 @@
-# Coding is Just Coding
+# 程序人生
 
 坚持不一定会成功，但坚持到别人坚持不下去的时候，你就已经成功了一半了
-
-
-
-## **基础路线（参考黑马培训）**
-
-![](./JavaStudyPlan/img/JavaRoute.png)
-
-> [2024黑马程序员Java学习路线图]: https://www.bilibili.com/read/cv9965357/
-
-
-
-## **进阶学习**
-
-JVM 底层调优 -> JUC 并发编程 -> IO NIO Netty -> 设计模式
 
 
 
@@ -33,3 +19,9 @@ JVM 底层调优 -> JUC 并发编程 -> IO NIO Netty -> 设计模式
 ## 学习时间线
 
 完善中...
+
+
+
+## Coding is just coding
+
+软技能一样重要
