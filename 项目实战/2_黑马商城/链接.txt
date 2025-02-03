@@ -1,0 +1,7 @@
+视频教程：【黑马程序员SpringCloud微服务开发与实战，java黑马商城项目微服务实战开发（涵盖MybatisPlus、Docker、MQ、ES、Redis高级等）】 https://www.bilibili.com/video/BV1S142197x7/?p=36&share_source=copy_web&vd_source=d3666c2043c363d538f217512a5c5be0
+
+飞书文档：https://b11et3un53m.feishu.cn/wiki/FYNkwb1i6i0qwCk7lF2caEq5nRe
+
+百度云资源：https://pan.baidu.com/s/1JX0fhmV82mgPeBBbAMNV0w?pwd=7988#list/path=%2F&parentPath=%2Fsharelink3232509500-557912393106311
+
+gitee：https://gitee.com/huyi612/hmall
