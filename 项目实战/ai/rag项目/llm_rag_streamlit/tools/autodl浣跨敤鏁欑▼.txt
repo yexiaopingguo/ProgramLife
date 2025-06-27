@@ -1,0 +1,24 @@
+# 0.首先进入autodl-tmp/main文件夹
+
+# 1.打开两个终端
+
+# 3.在终端1启动大模型（有大模型的输出内容）
+python tools/chatglm3_server.py
+
+# 4.在终端2启动web界面（有对话内容，以及检索到的信息,先后运行一下两个命令）
+bash run.sh
+
+
+- 本地使用的两个方式
+
+--- 命令行
+
+0. 控制面板->自定义服务->选择linux/mac
+1. 打开本地命令行(win系统：win+r 输入cmd)
+2. 复制并在本地命令行运行
+ssh -CNg -L 6006:127.0.0.1:6006 xxxxxxxxxx -p 22079
+3. 如果让输入yes/no 输入yes
+4. 复制密码并本地命令行ctrl+v（不显示，直接回车即可） 
+q1iBqX0AdUC1
+5. 浏览器打开，即可使用
+http://localhost:6006

@@ -1,0 +1,70 @@
+<html>
+    <head>
+        <title>浏览器WebRTC拍照录制演示</title>
+
+        <link rel="stylesheet" href="css/client.css"/>
+
+        <style>
+            .none {
+                -webkit-filter: none;	
+            }
+
+            .blur {
+                -webkit-filter: blur(3px);	
+            }
+
+            .grayscale {
+                -webkit-filter: grayscale(1); 	
+            }
+
+            .invert {
+                -webkit-filter: invert(1);	
+            }
+
+            .sepia {
+                -webkit-filter: sepia(1);
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <section>
+            <div>
+                <label>滤镜:</label>
+                <select id="filter">
+                    <option value="none">无</option>
+                    <option value="blur">模糊</option>
+                    <option value="grayscale">黑白</option>
+                    <option value="invert">底片</option>
+                    <option value="sepia">怀旧</option>
+                </select>
+            </div>
+
+            <div>
+                <video autoplay playsinline id="player"></video>
+            </div>
+
+        </section>
+        <section>
+            <div>
+              <button id="snapshot">拍照</button>
+            	<button id="record">开始录像</button>
+            	<button id="recplay" disabled>播放</button>
+            	<button id="download" disabled>下载视频</button>
+            </div>
+            
+            <div>
+                <canvas id="picture"></canvas>
+            </div>
+		    <div>
+	          <video playsinline id="recplayer"></video>
+		    </div>            
+        </section>
+
+        <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+        <script src="./js/photo-client.js"></script>
+        <script src="./js/record-client.js"></script>
+    </body>
+</html>

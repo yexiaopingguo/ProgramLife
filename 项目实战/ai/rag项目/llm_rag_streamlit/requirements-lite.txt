@@ -1,0 +1,34 @@
+# knownledge
+fastapi
+openai
+huggingface
+modelscope
+sentencepiece
+# faiss-gpu
+faiss-cpu
+FlagEmbedding
+BCEmbedding
+pypdf
+docx2txt
+unstructured
+pdfminer.six
+python-docx
+mdtex2html>=1.3.0
+latex2mathml>=3.77.0
+colorama
+modelscope
+
+# langchain
+langchain>=0.1.9
+langchainhub>=0.1.14
+langchain
+langchain-community
+langchain-core
+langchain-experimental
+langchain-openai
+
+# ui
+streamlit
+streamlit-option-menu
+streamlit-pills
+streamlit-antd-components
